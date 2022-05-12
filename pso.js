@@ -2,7 +2,7 @@
 
 let flock;
 let bg;
-
+let disaster = false;
 let width = 1280;
 let height = 720;
 function grid(){
@@ -14,8 +14,22 @@ function grid(){
   }
 }
 
+function mouseClicked(event){
+    arr.push({x:mouseX, y:mouseY});
+    console.log("x:" + mouseX + "y: " + mouseY);
+}
+
+function keyPressed(){
+  if (key == ' '){ //this means space bar, since it is a space inside of the single quotes 
+    disaster = true;
+  }  
+  else if (keyCode === ENTER){
+    disaster = false; 
+  }
+}
+
 function setup() {
-  bg = loadImage('assets/bg.png');
+  bg = loadImage('assets/bg2.png');
   createCanvas(width, height);
   createP("Drag the mouse to generate new boids.");
   flock = new Flock();
@@ -29,9 +43,7 @@ function setup() {
 let arr = [];
 function draw() {
   background(bg);
-  if (mouseIsPressed) {
-    arr.push({x:mouseX, y:mouseY});
-  }
+ 
   flock.run();
 }
 
@@ -54,22 +66,22 @@ function FlowField(){
   this.field = [] 
 }
 
-
-
 FlowField.prototype.init = function(){
   for(let i = 0; i < this.cols; i ++){
     this.field[i] = []
     for(let j = 0; j < this.rows; j ++){
-      this.field[i][0] = new p5.Vector(0,1)
-      this.field[i][this.rows.length - 1] = new p5.Vector(-1,0)
+      this.field[i][this.rows/4] = new p5.Vector(0,1)
+      this.field[i][this.rows-1] = new p5.Vector(0,-1)
       this.field[0][j] = new p5.Vector(1,0);
-      if(i == this.cols.length -1){
-        this.field[this.cols.length - 1][j] = new p5.Vector(0,-1)
+      if(i == this.cols -1){
+        this.field[this.cols-1][j] = new p5.Vector(-1,0)
       }
       // this.field[i][j] = p5.Vector2D();
     }
   }
 }
+
+
 
 FlowField.prototype.lookup = function(lookup){
   let column = Math.round(constrain(lookup.x/this.resolution,0,this.cols-1));
@@ -143,10 +155,13 @@ Boid.prototype.flock = function(boids, flowField) {
   coh.mult(1.0);
   // fol.mult(1.5);
   // Add the force vectors to acceleration
-  // this.applyForce(sep);
-  // this.applyForce(ali);
-  // this.applyForce(coh);
-  this.applyForce(fol);
+  if(disaster){
+    this.applyForce(sep);
+    this.applyForce(ali);
+    this.applyForce(coh);
+  }else{
+    this.applyForce(fol);
+  }
 }
 
 // Method to update location
