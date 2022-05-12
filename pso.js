@@ -18,7 +18,8 @@ function setup() {
   bg = loadImage('assets/bg.png');
   createCanvas(width, height);
   createP("Drag the mouse to generate new boids.");
-
+  flowField = new FlowField();
+  flowField.init();
   flock = new Flock();
   // Add an initial set of boids into the system
   for (let i = 0; i < 100; i++) {
@@ -33,15 +34,7 @@ function draw() {
   if (mouseIsPressed) {
     arr.push({x:mouseX, y:mouseY});
   }
-  beginShape(Location)
-  for(let i = 0; i < arr.length; i ++){
-    vertex(arr[i].x, arr[i].y);
-  }
-
-  endShape(CLOSE)
   flock.run();
-
-
 }
 
 // Add a new boid into the System
@@ -55,6 +48,23 @@ function draw() {
 
 // Flock object
 // Does very little, simply manages the array of all the boids
+
+function FlowField(){
+  this.resolution = 10;
+  this.cols = width / this.resolution;
+  this.rows = height / this.resolution;
+  this.field = []
+  
+}
+
+FlowField.prototype.init = function(){
+  for(let i = 0; i < this.cols; i ++){
+    this.field[i] = []
+    for(let j = 0; j < this.rows; j ++){
+      this.field[i][j] = new p5.Vector(1,0);
+    }
+  }
+}
 
 function Flock() {
   // An array for all the boids
@@ -156,11 +166,21 @@ Boid.prototype.render = function() {
 
 // Wraparound
 Boid.prototype.borders = function() {
-  if (this.position.x < -this.r)  this.position.x = width + this.r;
-  if (this.position.y < -this.r)  this.position.y = height + this.r;
-  if (this.position.x > width + this.r) this.position.x = -this.r;
-  if (this.position.y > height + this.r) this.position.y = -this.r;
+  if (this.position.x < -this.r){
+      this.position.x = this.position.x + this.r;
+  }
+  if (this.position.y < -this.r){
+      this.position.y = this.position.y + this.r;
+  } 
+  if (this.position.x > width + this.r) {
+    this.position.x = width -this.r;
+  }
+  if (this.position.y > height + this.r){
+    this.position.y = height -this.r;
+  } 
 }
+
+
 
 // Separation
 // Method checks for nearby boids and steers away
