@@ -5,6 +5,15 @@ let bg;
 
 let width = 1280;
 let height = 720;
+function grid(){
+  for(let i = 0; i < width; i ++)
+  {
+    for(let j = 0; j < height; j ++){
+        
+    }
+  }
+}
+
 function setup() {
   bg = loadImage('assets/bg.png');
   createCanvas(width, height);
@@ -16,17 +25,29 @@ function setup() {
     let b = new Boid(width / 2,height / 2);
     flock.addBoid(b);
   }
-}
 
+}
+let arr = [];
 function draw() {
   background(bg);
+  if (mouseIsPressed) {
+    arr.push({x:mouseX, y:mouseY});
+  }
+  beginShape(Location)
+  for(let i = 0; i < arr.length; i ++){
+    vertex(arr[i].x, arr[i].y);
+  }
+
+  endShape(CLOSE)
   flock.run();
+
+
 }
 
 // Add a new boid into the System
-function mouseDragged() {
-  flock.addBoid(new Boid(mouseX, mouseY));
-}
+// function mouseDragged() {
+  // flock.addBoid(new Boid(mouseX, mouseY));
+// }
 
 // The Nature of Code
 // Daniel Shiffman
