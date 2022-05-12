@@ -18,8 +18,6 @@ function setup() {
   bg = loadImage('assets/bg.png');
   createCanvas(width, height);
   createP("Drag the mouse to generate new boids.");
-  flowField = new FlowField();
-  flowField.init();
   flock = new Flock();
   // Add an initial set of boids into the system
   for (let i = 0; i < 100; i++) {
@@ -53,27 +51,42 @@ function FlowField(){
   this.resolution = 10;
   this.cols = width / this.resolution;
   this.rows = height / this.resolution;
-  this.field = []
-  
+  this.field = [] 
 }
+
+
 
 FlowField.prototype.init = function(){
   for(let i = 0; i < this.cols; i ++){
     this.field[i] = []
     for(let j = 0; j < this.rows; j ++){
-      this.field[i][j] = new p5.Vector(1,0);
+      this.field[i][0] = new p5.Vector(0,1)
+      this.field[i][this.rows.length - 1] = new p5.Vector(-1,0)
+      this.field[0][j] = new p5.Vector(1,0);
+      if(i == this.cols.length -1){
+        this.field[this.cols.length - 1][j] = new p5.Vector(0,-1)
+      }
+      // this.field[i][j] = p5.Vector2D();
     }
   }
 }
 
+FlowField.prototype.lookup = function(lookup){
+  let column = Math.round(constrain(lookup.x/this.resolution,0,this.cols-1));
+  let row = Math.round(constrain(lookup.y/this.resolution,0,this.rows-1));
+  return this.field[column][row];
+}
+
 function Flock() {
   // An array for all the boids
+  this.flowField = new FlowField();
   this.boids = []; // Initialize the array
+  this.flowField.init(); // Initalize flowfield
 }
 
 Flock.prototype.run = function() {
   for (let i = 0; i < this.boids.length; i++) {
-    this.boids[i].run(this.boids);  // Passing the entire list of boids to each boid individually
+    this.boids[i].run(this.boids,this.flowField);  // Passing the entire list of boids to each boid individually
   }
 }
 
@@ -97,8 +110,8 @@ function Boid(x, y) {
   this.maxforce = 0.05; // Maximum steering force
 }
 
-Boid.prototype.run = function(boids) {
-  this.flock(boids);
+Boid.prototype.run = function(boids,flowField) {
+  this.flock(boids,flowField);
   this.update();
   this.borders();
   this.render();
@@ -108,20 +121,32 @@ Boid.prototype.applyForce = function(force) {
   // We could add mass here if we want A = F / M
   this.acceleration.add(force);
 }
-
+Boid.prototype.follow = function (flow){
+  let desired = flow.lookup(this.position);
+  if(desired === undefined){
+    return;
+  }
+  desired.mult(this.maxspeed);
+  let steer = p5.Vector.sub(desired,this.velocity);
+  steer.limit(this.maxforce);  // Limit to maximum steering force
+  return steer;
+}
 // We accumulate a new acceleration each time based on three rules
-Boid.prototype.flock = function(boids) {
+Boid.prototype.flock = function(boids, flowField) {
   let sep = this.separate(boids);   // Separation
   let ali = this.align(boids);      // Alignment
   let coh = this.cohesion(boids);   // Cohesion
+  let fol = this.follow(flowField);
   // Arbitrarily weight these forces
   sep.mult(1.5);
   ali.mult(1.0);
   coh.mult(1.0);
+  // fol.mult(1.5);
   // Add the force vectors to acceleration
-  this.applyForce(sep);
-  this.applyForce(ali);
-  this.applyForce(coh);
+  // this.applyForce(sep);
+  // this.applyForce(ali);
+  // this.applyForce(coh);
+  this.applyForce(fol);
 }
 
 // Method to update location
