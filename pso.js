@@ -1,9 +1,13 @@
 
 
 let flock;
+let bg;
 
+let width = 1280;
+let height = 720;
 function setup() {
-  createCanvas(640, 360);
+  bg = loadImage('assets/bg.png');
+  createCanvas(width, height);
   createP("Drag the mouse to generate new boids.");
 
   flock = new Flock();
@@ -15,7 +19,7 @@ function setup() {
 }
 
 function draw() {
-  background(51);
+  background(bg);
   flock.run();
 }
 
