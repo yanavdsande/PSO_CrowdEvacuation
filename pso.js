@@ -6,6 +6,7 @@ let disaster = false;
 let width = 640;
 let height = 360;
 
+let slider;
 let number_of_boids = 100;
 
 function mouseClicked(event){
@@ -25,7 +26,7 @@ function keyPressed(){
 function setup() {
   bg = loadImage('assets/bg2.png');
   createCanvas(width, height);
-  createP("Drag the mouse to generate new boids.");
+  frameRate(20);
   flock = new Flock();
   // Add an initial set of boids into the system
   for (let i = 0; i < number_of_boids; i++) {
@@ -33,18 +34,28 @@ function setup() {
     flock.addBoid(b);
   }
 
+  slider = createSlider(0, 1000, 1);
+  slider.position(10, 10);
+  slider.style('width', '80px');
+
 }
 let arr = [];
 function draw() {
   background(bg);
- 
+  number_of_boids = slider.value();
   flock.run();
 }
 
 // Add a new boid into the System
-// function mouseDragged() {
-  // flock.addBoid(new Boid(mouseX, mouseY));
-// }
+function mouseDragged() {
+  flock = null;
+  flock = new Flock();
+  // Add an initial set of boids into the system
+  for (let i = 0; i < number_of_boids; i++) {
+    let b = new Boid(width / 2,height / 2);
+    flock.addBoid(b);
+  }
+}
 
 // The Nature of Code
 // Daniel Shiffman
