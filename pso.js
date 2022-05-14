@@ -3,16 +3,10 @@
 let flock;
 let bg;
 let disaster = false;
-let width = 1280;
-let height = 720;
-function grid(){
-  for(let i = 0; i < width; i ++)
-  {
-    for(let j = 0; j < height; j ++){
-        
-    }
-  }
-}
+let width = 640;
+let height = 360;
+
+let number_of_boids = 100;
 
 function mouseClicked(event){
     arr.push({x:mouseX, y:mouseY});
@@ -34,7 +28,7 @@ function setup() {
   createP("Drag the mouse to generate new boids.");
   flock = new Flock();
   // Add an initial set of boids into the system
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < number_of_boids; i++) {
     let b = new Boid(width / 2,height / 2);
     flock.addBoid(b);
   }
@@ -70,7 +64,8 @@ FlowField.prototype.init = function(){
   for(let i = 0; i < this.cols; i ++){
     this.field[i] = []
     for(let j = 0; j < this.rows; j ++){
-      this.field[i][this.rows/4] = new p5.Vector(0,1)
+      let upperborder = this.rows / 4;
+      this.field[i][upperborder - j] = new p5.Vector(0,1)
       this.field[i][this.rows-1] = new p5.Vector(0,-1)
       this.field[0][j] = new p5.Vector(1,0);
       if(i == this.cols -1){
