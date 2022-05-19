@@ -16,7 +16,7 @@ const delta_time = 0.1
 
 function setup(){
   createCanvas(width, height);
-  frameRate(24)
+  frameRate(10)
   for(let i = 0; i < nr_particles; i ++)
   {
     // let r = random (r_min, r_max);
@@ -72,6 +72,14 @@ class Particle{
         this.e_ij = diff_pos.copy().div(diff_pos.copy().magSq());
     }
   }
+  update_radius(){
+    if(this.escape_v != undefined){
+      this.r = r_min;
+    }else{
+      this.r += r_max / (tau / delta_time);
+      this.r = min(this.r, r_max);
+    }
+  }
   update_escape_v(v_e){
     if(this.e_ij.x == 0 && this.e_ij.y == 0){
       this.escape_v = undefined;
@@ -87,6 +95,7 @@ class Particle{
   }
   update(){
     this.update_escape_v(v_d_max);
+    this.update_radius();
     if(this.escape_v != undefined){
         this.pos.add(this.escape_v.mult(delta_time));
     }else{
