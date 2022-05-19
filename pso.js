@@ -35,18 +35,19 @@ function draw(){
     const p1 = particles[i];
     for(let j = 0; j < nr_particles; j ++){
       const p2 = particles[j];
-    //   if(p1.pos.x < p1.r){ // Left wall hit
-    //       p1.add_collision(createVector(0, p1.pos.y));
-    //   }else if(p1.pos.x > width - padding - p1.r){ // Right wall hit
-    //       p1.add_collision(createVector(width - padding, p1.pos.y));
-    //   }
+      if(p1.pos.x < p1.r){ // Left wall hit
+          p1.add_collision(createVector(0, p1.pos.y));
+      }else if(p1.pos.x > width - p1.r){ // Right wall hit
+          p1.add_collision(createVector(width, p1.pos.y));
+      }
 
-    //   if(p1.pos.y < height - padding - p1.r){ // top wall hit
-    //       p1.add_collision(createVector(p1.pos.x, height - padding));
-    //   }else if(p1.pos.y < p1.r){ // bottom wall hit
-    //       p1.add_collision(createVector(p1.pos.x, 0));
-    //   }
-      if(dist(p1.pos.x, p1.pos.y, p2.pos.x, p2.pos.y) < p1.r){
+      if(p1.pos.y > height - p1.r){ // top wall hit
+          p1.add_collision(createVector(p1.pos.x, height));
+      }else if(p1.pos.y < p1.r){ // bottom wall hit
+          p1.add_collision(createVector(p1.pos.x, 0));
+      }
+
+      if(dist(p1.pos.x, p1.pos.y, p2.pos.x, p2.pos.y) < p1.r){ // collision with p1 and p2
           p1.add_collision(p2);
       }
     }
@@ -76,7 +77,6 @@ class Particle{
       this.escape_v = undefined;
     }else {
       this.escape_v = this.e_ij.copy().mult(v_e);
-      // this.escape_v = this.e_ij.copy().mult(this.e_ij.copy().magSq().div(v_e));
       this.e_ij.set(0,0);
     }
   }
@@ -99,24 +99,6 @@ class Particle{
     drawArrow(this.pos, this.direction);
   }
 }
-/*
-i is the specific particle
-r is the radius
-d is desired velocity
-b is magnitude
-*/
-// function v_d_max (i, r, d, b)
-// {
-//   return max(d) * ((r[i] - min(r))/(max(r) - min(r)))^b;
-// }
-
-// function delta_r (i,r,d,b) {
-//   return max(r) / (tau / delta_t(i,r,d,b))
-// }
-
-// function delta_t (i,r,d,b) {
-//   return min(r) / 2 * max(v_d_max(i,r,d,b));
-// }
 
 class Velocity{
   constructor(x,y){
@@ -129,15 +111,6 @@ class Velocity{
     return this.d.mag();
   }
 }
-
-
-
-
-
-
-
-
-
 
 // draw an arrow for a vector at a given base position
 function drawArrow(base, vec) {
