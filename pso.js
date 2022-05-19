@@ -2,7 +2,7 @@ const particles = [];
 // Constants
 const beta = 0.9;
 const tau = 0.5;
-const factor = 50; // Scale
+const factor = 20; // Scale
 const r_min = 0.1 * factor
 const r_max = 0.37 * factor
 const v_d_max = 0.95 * factor // in meters per second
@@ -10,7 +10,7 @@ const v_d_max = 0.95 * factor // in meters per second
 const width = 20 * factor // in meters
 const height = 20 * factor // in meters
 const padding = 50;
-const nr_particles = 200;
+const nr_particles = 500;
 const delta_time = 0.1
 
 
