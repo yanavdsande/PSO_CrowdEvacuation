@@ -4,21 +4,21 @@ from random import seed
 from random import randint
 particles = [];
 # Constants
-beta = 0.9;
-tau = 0.5;
-factor = 20; # Scale
+beta = 0.9
+tau = 0.5
+factor = 20 # Scale
 r_min = 0.1 * factor
 r_max = 0.37 * factor
 v_d_max = 0.95 * factor # in meters per second
 # Simulation constants
 width = 20 * factor # in meters
 height = 20 * factor # in meters
-padding = 50;
-nr_particles = 500;
+padding = 50
+nr_particles = 500
 delta_time = 0.1
-targetX = width / 2;
+targetX = width / 2
 targetY = height;
-
+offset = 0
 def dist(a,b):
     return np.linalg.norm(a-b)
 
@@ -30,16 +30,15 @@ def setup():
     pos = np.array([randint(padding, width - padding),randint(padding, height - padding)])
     target = np.array ([targetX, targetY]);
     particles.append( Particle(i, pos, target, r, target) )
-  draw()
+  while(len(particles) > 0) : draw()
 
 def draw():
-    for i in range(nr_particles):
-        p1 = particles[i];
+    for p1 in particles:
         if (p1.pos[0] >= targetX - 10 or p1.pos[0] <= targetX + 10) and p1.pos[1] >= targetY - 10:
-            pass;
+            particles.remove(p1)
+            print(len(particles))
         
-        for j in range(nr_particles):
-            p2 = particles[j];
+        for p2 in particles:
             if(p1.pos[0] < p1.r): # Left wall hit
                 p1.add_collision(np.array([0, p1.pos[1]]))
             elif(p1.pos[0] > width - p1.r): # Right wall hit
@@ -51,7 +50,7 @@ def draw():
                 p1.add_collision(np.array([p1.pos[0], 0]))
 
             if(dist(p1.pos, p2.pos) < p1.r): # collision with p1 and p2
-                p1.add_collision(p2)
+                p1.add_collision(p2.pos)
         p1.update();  
         p1.draw();
 
@@ -66,10 +65,11 @@ class Particle :
     self.update_target_v();
   
   def draw(self):
-      print(self.pos)
+      pass
+      #print(self.pos)
   
-  def add_collision(self, other):
-    diff_pos = np.subtract(self.pos,other.pos);
+  def add_collision(self, other_pos):
+    diff_pos = np.subtract(self.pos,other_pos);
     if diff_pos[0] != 0 and diff_pos[1] != 0:
         self.e_ij = np.divide(diff_pos, np.linalg.norm(diff_pos))  # diff_pos.copy().div(diff_pos.copy().magSq());
   
@@ -96,9 +96,9 @@ class Particle :
     self.update_radius();
     if self.escape_v is None:
         self.update_target_v();
-        np.add(self.pos, np.multiply(self.v, delta_time))
+        self.pos = np.add(self.pos, np.multiply(self.v, delta_time))
     else:
-        np.add(self.pos, np.multiply(self.escape_v, delta_time))
+        self.pos = np.add(self.pos, np.multiply(self.escape_v, delta_time))
 
  
 
