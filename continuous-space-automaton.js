@@ -12,7 +12,8 @@ const height = 20 * factor // in meters
 const padding = 50;
 const nr_particles = 500;
 const delta_time = 0.1
-
+const targetX = width / 2;
+const targetY = height;
 
 function setup(){
   createCanvas(width, height);
@@ -22,7 +23,7 @@ function setup(){
     // let r = random (r_min, r_max);
     let r = r_max;
     let pos = createVector(random(padding, width - padding),random(padding, height - padding));
-    let target = createVector (width / 2, height);
+    let target = createVector (targetX, targetY);
     particles[i] = new Particle(i, pos, target, r, target);
   }
 }
@@ -33,6 +34,9 @@ function draw(){
   for(let i = 0; i < nr_particles; i ++)
   {
     const p1 = particles[i];
+    if((p1.pos.x >= targetX - 10 || p1.pos.x <= targetX + 10) && p1.pos.y >= targetY - 10){
+      continue;
+    }
     for(let j = 0; j < nr_particles; j ++){
       const p2 = particles[j];
       if(p1.pos.x < p1.r){ // Left wall hit
