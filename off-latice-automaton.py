@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 # generate random integer values
 from random import seed
 from random import randint
@@ -6,14 +7,14 @@ particles = [];
 # Constants
 beta = 0.9
 tau = 0.5
-factor = 20 # Scale
+factor = 1 # Scale
 r_min = 0.1 * factor
 r_max = 0.37 * factor
 v_d_max = 0.95 * factor # in meters per second
 # Simulation constants
 width = 20 * factor # in meters
 height = 20 * factor # in meters
-padding = 50
+padding = 0 #50
 nr_particles = 500
 delta_time = 0.1
 targetX = width / 2
@@ -32,8 +33,10 @@ def setup():
     particles.append( Particle(i, pos, target, r, target) )
   while(len(particles) > 0) : draw()
 
-def draw():
-    for p1 in particles:
+def update():
+  X = np.empty
+  Y = np.empty
+  for p1 in particles:
         if (p1.pos[0] >= targetX - 10 or p1.pos[0] <= targetX + 10) and p1.pos[1] >= targetY - 10:
             particles.remove(p1)
             print(len(particles))
@@ -51,8 +54,36 @@ def draw():
 
             if(dist(p1.pos, p2.pos) < p1.r): # collision with p1 and p2
                 p1.add_collision(p2.pos)
-        p1.update();  
-        p1.draw();
+        p1.update();
+        [x,y] = p1.draw()   
+        np.append(X, x)
+        np.append(Y, y)
+  return X, Y 
+
+def draw():
+      x,y = update()
+      # Directional vectors
+      u = targetX
+      v = targetY
+    
+      # Plotting Vector Field with QUIVER
+      plt.quiver(x, y, u, v, color='g')
+      plt.title('Vector Field')
+        
+      # Setting x, y boundary limits
+      plt.xlim(-7, 7)
+      plt.ylim(-7, 7)
+        
+      # Show plot with grid
+      plt.grid()
+      plt.show()
+      #print(self.pos)
+      
+ 
+      
+        
+        
+        
 
 class Particle : 
   def __init__(self,id, pos, velocity, radius, target):
@@ -65,8 +96,10 @@ class Particle :
     self.update_target_v();
   
   def draw(self):
-      pass
-      #print(self.pos)
+      x = self.pos[0]
+      y = self.pos[1]
+      return [x, y]
+      
   
   def add_collision(self, other_pos):
     diff_pos = np.subtract(self.pos,other_pos);
