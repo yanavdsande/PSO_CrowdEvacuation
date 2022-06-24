@@ -15,6 +15,7 @@ const delta_time = 0.1
 const targetX = width / 2;
 const targetY = height;
 
+const myset = new Set();
 function setup(){
   createCanvas(width, height);
   frameRate(10)
@@ -35,6 +36,8 @@ function draw(){
   {
     const p1 = particles[i];
     if((p1.pos.x >= targetX - 10 || p1.pos.x <= targetX + 10) && p1.pos.y >= targetY - 10){
+      myset.add(p1.id);
+      console.log(nr_particles - myset.size);
       continue;
     }
     for(let j = 0; j < nr_particles; j ++){

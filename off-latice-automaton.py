@@ -20,12 +20,12 @@ targetX = width / 2
 targetY = height;
 offset = 0
 def dist(a,b):
-    return np.linalg.norm(a-b)
+    return np.linalg.norm(np.subtract(a,b))
 
 def setup():
   seed(1)
   for i in range(nr_particles):
-    # let r = random (r_min, r_max);
+    # let r = random (r_min, r_max); 
     r = r_max;
     pos = np.array([randint(padding, width - padding),randint(padding, height - padding)])
     target = np.array ([targetX, targetY]);
@@ -71,7 +71,7 @@ class Particle :
   def add_collision(self, other_pos):
     diff_pos = np.subtract(self.pos,other_pos);
     if diff_pos[0] != 0 and diff_pos[1] != 0:
-        self.e_ij = np.divide(diff_pos, np.linalg.norm(diff_pos))  # diff_pos.copy().div(diff_pos.copy().magSq());
+        self.e_ij = np.divide(diff_pos, np.square(np.linalg.norm(diff_pos)))  # diff_pos.copy().div(diff_pos.copy().magSq());
   
   def update_radius(self):
     if self.escape_v is not None:
@@ -88,7 +88,7 @@ class Particle :
   
   def update_target_v(self):
     v_mod = v_d_max * ((self.r - r_min) / (r_max - r_min))**beta;
-    self.direction = np.subtract(self.t, np.linalg.norm(self.pos)) # this.direction = this.t.copy().sub(this.pos).normalize(); 
+    self.direction = np.linalg.norm(np.subtract(self.t, self.pos)) # this.direction = this.t.copy().sub(this.pos).normalize(); 
     self.v = np.multiply(self.direction, v_mod)
   
   def update(self):
