@@ -15,13 +15,16 @@ v_d_max = 0.95 * factor # in meters per second
 width = 20 * factor # in meters
 height = 20 * factor # in meters
 padding = 0 #50
-nr_particles = 500
+nr_particles = 365
 delta_time = 0.1
 targetX = width / 2
 targetY = height;
 offset = 0
 def dist(a,b):
     return np.linalg.norm(np.subtract(a,b))
+
+def flatten(xss):
+    return [x for xs in xss for x in xs]
 
 def setup():
   seed(1)
@@ -31,7 +34,19 @@ def setup():
     pos = np.array([randint(padding, width - padding),randint(padding, height - padding)])
     target = np.array ([targetX, targetY]);
     particles.append( Particle(i, pos, target, r, target) )
-  while(len(particles) > 0) : draw()
+  vs = []
+  ds = []
+  while(len(particles) > 0) : 
+    v,d = draw()
+    if len(v) > 0 and len(d) > 0:
+      vs.append(v)
+      ds.append(d)
+  vs = flatten(vs) 
+  ds = flatten(ds)
+  plt.plot(ds,vs)
+  plt.xlabel("Density (1/$m^2)$")
+  plt.ylabel("Velocity (m/s)")
+  plt.show()
 
 def update():
   X = np.empty
@@ -39,7 +54,7 @@ def update():
   for p1 in particles:
         if (p1.pos[0] >= targetX - 10 or p1.pos[0] <= targetX + 10) and p1.pos[1] >= targetY - 10:
             particles.remove(p1)
-            print(len(particles))
+            # print(len(particles))
         
         for p2 in particles:
             if(p1.pos[0] < p1.r): # Left wall hit
@@ -59,31 +74,45 @@ def update():
         np.append(X, x)
         np.append(Y, y)
   return X, Y 
-
+def projection(a,b):
+      return (np.dot(a, b) / np.dot(b, b)) * b
 def draw():
       x,y = update()
+      density = len(particles) / 12 * np.pi
+      velocity = 0
+      for p in particles:
+            if p.escape_v is None : continue
+            velocity = projection(p.escape_v, v_d_max)
+      v = []
+      d = []
+      if velocity is not 0: 
+        velocity = np.divide(velocity, len(particles))
+        speed = np.sqrt(np.dot(velocity, velocity))
+        v.append( min(speed, v_d_max) )
+        d.append( np.sqrt(density) )
+      return v, d
+      # for p in plot:
+        # print("velocity:", p[0], " density:", p[1])  
+        # print("velocity:", type(p[0]), " density:", type(p[1]))  
+
+      # plt.plot(v, d)
       # Directional vectors
-      u = targetX
-      v = targetY
+      # u = targetX
+      # v = targetY
     
-      # Plotting Vector Field with QUIVER
-      plt.quiver(x, y, u, v, color='g')
-      plt.title('Vector Field')
+      # # Plotting Vector Field with QUIVER
+      # plt.quiver(x, y, u, v, color='g')
+      # plt.title('Vector Field')
         
-      # Setting x, y boundary limits
-      plt.xlim(-7, 7)
-      plt.ylim(-7, 7)
+      # # Setting x, y boundary limits
+      # plt.xlim(-7, 7)
+      # plt.ylim(-7, 7)
         
-      # Show plot with grid
-      plt.grid()
-      plt.show()
+      # # Show plot with grid
+      # plt.grid()
+      # plt.show()
       #print(self.pos)
       
- 
-      
-        
-        
-        
 
 class Particle : 
   def __init__(self,id, pos, velocity, radius, target):
