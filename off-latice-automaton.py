@@ -3,6 +3,11 @@ import matplotlib.pyplot as plt
 # generate random integer values
 from random import seed
 from random import randint
+import matplotlib as mpl
+import matplotlib.font_manager as fm# Collect all the font names available to matplotlib
+font_names = [f.name for f in fm.fontManager.ttflist]
+print(font_names)
+
 particles = [];
 # Constants
 beta = 0.9
@@ -44,6 +49,9 @@ def setup():
   vs = flatten(vs) 
   ds = flatten(ds)
   plt.plot(ds,vs)
+  mpl.rcParams['font.family'] = 'DejaVu Serif'
+  plt.rcParams['font.size'] = 18
+  plt.rcParams['axes.linewidth'] = 2
   plt.xlabel("Density (1/$m^2)$")
   plt.ylabel("Velocity (m/s)")
   plt.show()
