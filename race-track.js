@@ -10,7 +10,7 @@ const v_d_max = 0.95 * factor // in meters per second
 const width = 20 * factor // in meters
 const height = 20 * factor // in meters
 const padding = 50;
-const nr_particles = 500;
+const nr_particles = 365;
 const delta_time = 0.1
 const targetX = width / 2;
 const targetY = height / 2;
@@ -68,11 +68,10 @@ class Particle{
     this.escape_v = undefined;
     this.update_target_v();
     this.r = min(width, height) * 0.35;
-    this.delta = PI * 0.001;
+    this.delta = PI * 0.001
     this.angle = 0
   }
   update_target(){
-   
     this.angle += this.delta;
     this.t.x = targetX + this.r * cos (this.angle);
     this.t.y = targetY + this.r * sin (this.angle);
@@ -107,8 +106,8 @@ class Particle{
     this.v = this.direction.mult(v_mod);
   }
   update(){
-    this.update_escape_v(v_d_max);
     this.update_target();
+    this.update_escape_v(v_d_max);
     this.update_radius();
     if(this.escape_v != undefined){
         this.pos.add(this.escape_v.mult(delta_time));
